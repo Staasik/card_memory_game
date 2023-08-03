@@ -1,15 +1,19 @@
 import { useState } from 'react';
 import { HtmlWrapper, GameDiv, Text, GameItem, Restart } from '../../styles/MyGame'
 
+//исходные данные
 const INITIAL_CARDS = [1, 1, 2, 2, 3, 3, 4, 4, 5, 5, 6, 6, 7, 7, 8, 8];
 const ICONS = ["🐼️", "🐹", "🦝", "🦄", "🐺", "🐱", "🐴", "🐷"];
 
+//интерфейс карточки
 interface CardItem {
     value: number;
     index: number;
 }
 
 function MyGame() {
+
+    //рандомно сортируем карточки
     function randomSort(array: number[]) {
         for (let i = array.length - 1; i > 0; i--) {
           const j = Math.floor(Math.random() * (i + 1));
@@ -18,18 +22,20 @@ function MyGame() {
         return array;
     }
     
+    //изменяем стили карточек
     function updateCard(Element: HTMLElement, color: string, cursor: string, textContent: string){
         Element.style.backgroundColor = color;
         Element.style.cursor = cursor;
         Element.textContent = textContent;
     }
 
-    const [gameOver, setGameOver] = useState(false);
-    const [numbersArray, setNumbersArray] = useState<number[]>(randomSort(INITIAL_CARDS));
+    const [gameOver, setGameOver] = useState(false);//конец игры
+    const [numbersArray, setNumbersArray] = useState<number[]>(randomSort(INITIAL_CARDS));//массив карточек рандомно отсортированный
 
-    const pair: CardItem[] = [];
-    const all_pair: number[] = [];
+    const pair: CardItem[] = [];//две карточки для сравнения
+    const all_pair: number[] = [];//все карточки открыты
 
+    //проверка одинаковые ли две карточки
     function Check(value: number,index: number) {  
         const foundResult = all_pair.find((el) => el === index);
         if(!foundResult) {
@@ -39,11 +45,13 @@ function MyGame() {
                 pair.push({value,index}) 
             }    
         }        
-   
+        
+        //чтобы не сразу карточки поменяли цвет
         setTimeout(() => {
             if(pair.length==2){
                 for(let i=0;i<2;i++){
                     const El = document.getElementById(String(pair[i].index)); 
+                    //если карточки одинаковые
                     if(pair[0].value==pair[1].value){
                         if (El) {
                             updateCard(El,'#F08080','default',ICONS[pair[i].value-1])
@@ -58,12 +66,14 @@ function MyGame() {
                 }
                 pair.length=0
             }
+            //нашли все пары, игра закончена
             if (all_pair.length === 16){
                 setGameOver(true)
             }
         }, 1500);
     }
 
+    //новая игра
     function Restarting(){     
         setGameOver(false)
         setNumbersArray([...randomSort(numbersArray)])
